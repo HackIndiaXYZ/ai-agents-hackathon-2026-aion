@@ -4,15 +4,16 @@ from logs.event_logger import log_event
 
 def get_operator_response(event="system check"):
 
-    decisions = evaluate_factory()
+    evaluation = evaluate_factory()
 
     log_entry = log_event(
         event,
         factory_state,
-        decisions
+        evaluation
     )
     
     return {
-        "decisions": decisions,
+        "severity": evaluation["severity"],
+        "decisions": evaluation["decisions"],
         "log": log_entry
     }
