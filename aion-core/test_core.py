@@ -6,6 +6,7 @@ print("\nINITIAL STATE:\n")
 print(factory_state)
 
 apply_disturbance("power_surge")
+response = get_operator_response("power_surge")
 
 print("\nUPDATED STATE:\n")
 print(factory_state)
