@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect,useState } from "react";
 
 export default function Home() {
 
@@ -10,6 +10,15 @@ export default function Home() {
 
   const [powerSurge, setPowerSurge] = useState(false);
   const [highDemand, setHighDemand] = useState(false);
+  const [simulationData, setSimulationData] = useState<any>(null);
+
+  useEffect(() => {
+    fetch("/simulation_output.json")
+    .then((res) => res.json())
+    .then((data) => {
+      setSimulationData(data);
+    });
+  }, []);
   
   const resetSystem = () => {
   setThermalAlert(false);
@@ -46,21 +55,21 @@ export default function Home() {
         <div className="bg-[#0B1120] p-5 rounded-2xl border border-white/10 hover:border-cyan-400/40 hover:scale-105 transition-all duration-300">
           <p className="text-gray-400">Throughput</p>
           <h2 className="text-3xl font-bold mt-2">
-            {throughput}%
+            {simulationData?.factory_state?.throughput ?? 84}%
           </h2>
         </div>
 
         <div className="bg-[#0B1120] p-5 rounded-2xl border border-white/10 hover:border-cyan-400/40 hover:scale-105 transition-all duration-300">
           <p className="text-gray-400">Thermal Load</p>
           <h2 className="text-3xl font-bold mt-2">
-            {thermalAlert ? "91°C" : "72°C"}
+            {simulationData?.factory_state?.thermalAlert ?? 72}%
           </h2>
         </div>
 
         <div className="bg-[#0B1120] p-5 rounded-2xl border border-white/10 hover:border-cyan-400/40 hover:scale-105 transition-all duration-300">
           <p className="text-gray-400">Power Usage</p>
           <h2 className="text-3xl font-bold mt-2">
-            {powerUsage}%
+            {simulationData?.factory_state?.powerUsage ?? 68}%
           </h2>
         </div>
 
@@ -302,17 +311,15 @@ export default function Home() {
         <div className="space-y-4 text-sm">
 
           <div className="border-l-2 border-cyan-400 pl-4 text-gray-300">
-            [12:04:21] Thermal load increase detected in Chamber 3.
+          {simulationData?.response?.decisions?.map(
+            (decision: string, index: number) => (
+              <div key = {index}>{decision}</div>
+            )
+          )}
           </div>
-
-          <div className="border-l-2 border-yellow-400 pl-4 text-gray-300">
-            {thermalAlert
-              ? "[12:04:28] AI rerouting thermal load to auxiliary cooling channels."
-              : "[12:04:28] Production throughput operating within nominal parameters."}
-          </div>
-
-          <div className="border-l-2 border-green-400 pl-4 text-gray-300">
-            [12:04:40] Cooling redistribution successful. System stabilized.
+             
+          <div className = "text-sm tracking-widest text-red-400">
+            Severity: {simulationData?.response?.severity}
           </div>
 
         </div>
