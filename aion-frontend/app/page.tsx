@@ -26,6 +26,26 @@ export default function Home() {
   setHighDemand(false);
   setThroughput(84);
 };
+ 
+  const runSimulation = async (event: string) => {
+
+  await fetch("/api/simulate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      event
+    })
+  });
+
+  const updated = await fetch("/simulation_output.json");
+
+  const data = await updated.json();
+
+  setSimulationData(data);
+};
+
 
   return (
     <main className="min-h-screen bg-[#050816] text-white p-6">
@@ -217,9 +237,7 @@ export default function Home() {
           {/* COOLING FAILURE */}
           <button
             onClick={() => {
-              setThermalAlert(true);
-              setThroughput(61);
-              setPowerUsage(73);
+              runSimulation("cooling_failure");
             }}
             className="bg-red-500/20 border border-red-500/30 px-5 py-3 rounded-xl hover:bg-red-500/30 transition-all duration-300"
           >
@@ -241,9 +259,7 @@ export default function Home() {
           {/* HIGH DEMAND */}
           <button
             onClick={() => {
-              setHighDemand(true);
-              setThroughput(96);
-              setPowerUsage(91);
+              runSimulation("high_demand")
             }}
             className="bg-yellow-500/20 border border-yellow-500/30 px-5 py-3 rounded-xl hover:bg-yellow-500/30 transition-all duration-300"
           >
@@ -265,16 +281,24 @@ export default function Home() {
           {/* POWER SURGE */}
           <button
             onClick={() => {
-              setPowerSurge(true);
-              setThermalAlert(true);
-              setPowerUsage(99);
-              setThroughput(58);
+              runSimulation("power_surge")
             }}
             className="bg-cyan-500/20 border border-cyan-500/30 px-5 py-3 rounded-xl hover:bg-cyan-500/30 transition-all duration-300"
           >
             Trigger Power Surge
           </button>
           
+          {/*MATERIAL SHORTAGE*/}
+          <button
+            onClick={() =>{
+              runSimulation("material_shortage")
+            }}
+            className="bg-violet-500/20 border border-violet-500/30 px-5 py-3 rounded-xl hover:bg-violet-500/30 transition-all duration-300"
+            >
+             Trigger Material Shortage
+            </button> 
+
+
           {/* SYSTEM RESET */}
           <button
             onClick={resetSystem}

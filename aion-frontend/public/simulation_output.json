@@ -1,12 +1,12 @@
 {
     "factory_state": {
-        "throughput": 84,
+        "throughput": 95,
         "thermal_load": 72,
-        "power_usage": 68,
+        "power_usage": 82,
         "storage_health": 91,
         "cooling_efficiency": 88,
         "material_availability": 93,
-        "deadline_pressure": 40,
+        "deadline_pressure": 57,
         "maintenance_health": 87,
         "system_status": "stable"
     },
@@ -16,16 +16,16 @@
             "System operating within optimal thresholds."
         ],
         "log": {
-            "timestamp": "10:01:12",
-            "event": "power surge",
+            "timestamp": "11:00:42",
+            "event": "high_demand",
             "state": {
-                "throughput": 84,
+                "throughput": 95,
                 "thermal_load": 72,
-                "power_usage": 68,
+                "power_usage": 82,
                 "storage_health": 91,
                 "cooling_efficiency": 88,
                 "material_availability": 93,
-                "deadline_pressure": 40,
+                "deadline_pressure": 57,
                 "maintenance_health": 87,
                 "system_status": "stable"
             },
