@@ -4,14 +4,14 @@ import { useEffect,useState } from "react";
 
 export default function Home() {
 
-  const [thermalAlert, setThermalAlert] = useState(false);
-  const [throughput, setThroughput] = useState(84);
-  const [powerUsage, setPowerUsage] = useState(68);
-
-  const [powerSurge, setPowerSurge] = useState(false);
-  const [highDemand, setHighDemand] = useState(false);
   const [simulationData, setSimulationData] = useState<any>(null);
+   
+  const severity = simulationData?.response?.severity ?? "NORMAL";
 
+  const thermalCritical = (simulationData?.factory_state?.thermal_load ?? 0) > 80;
+
+  const powerCritical = (simulationData?.factory_state?.power_usage ?? 0) > 80;
+  
   useEffect(() => {
     fetch("/simulation_output.json")
     .then((res) => res.json())
@@ -19,31 +19,40 @@ export default function Home() {
       setSimulationData(data);
     });
   }, []);
-  
-  const resetSystem = () => {
-  setThermalAlert(false);
-  setPowerSurge(false);
-  setHighDemand(false);
-  setThroughput(84);
-};
  
   const runSimulation = async (event: string) => {
 
-  await fetch("/api/simulate", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      event
-    })
-  });
+  console.log("RUN SIMULATION:", event);
 
-  const updated = await fetch("/simulation_output.json");
+  try {
 
-  const data = await updated.json();
+    const response = await fetch("/api/simulate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        event
+      })
+    });
 
-  setSimulationData(data);
+    console.log("API STATUS:", response.status);
+
+    const updated = await fetch(
+      "/simulation_output.json?t=" + Date.now()
+    );
+
+    const data = await updated.json();
+
+    console.log("NEW DATA:", data);
+
+    setSimulationData(data);
+
+  } catch (error) {
+
+    console.error("SIMULATION ERROR:", error);
+
+  }
 };
 
 
@@ -63,8 +72,15 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="bg-green-500/20 text-green-400 px-4 py-2 rounded-xl border border-green-500/30 animate-pulse shadow-lg shadow-green-500/20">
-          Factory Status: OPERATIONAL
+        <div className={`px-4 py-2 rounded-xl border animate-pulse
+          ${
+            severity === "CRITICAL"
+              ? "bg-red-500/20 text-red-400 border-red-500/30"
+              : severity === "WARNING"
+              ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+              : "bg-green-500/20 text-green-400 border-green-500/30"
+          }`}>
+          Factory Status: {severity}
         </div>
 
       </div>
@@ -82,23 +98,23 @@ export default function Home() {
         <div className="bg-[#0B1120] p-5 rounded-2xl border border-white/10 hover:border-cyan-400/40 hover:scale-105 transition-all duration-300">
           <p className="text-gray-400">Thermal Load</p>
           <h2 className="text-3xl font-bold mt-2">
-            {simulationData?.factory_state?.thermalAlert ?? 72}%
+            {simulationData?.factory_state?.thermal_load ?? 72}%
           </h2>
         </div>
 
         <div className="bg-[#0B1120] p-5 rounded-2xl border border-white/10 hover:border-cyan-400/40 hover:scale-105 transition-all duration-300">
           <p className="text-gray-400">Power Usage</p>
           <h2 className="text-3xl font-bold mt-2">
-            {simulationData?.factory_state?.powerUsage ?? 68}%
+            {simulationData?.factory_state?.power_usage ?? 68}%
           </h2>
         </div>
 
         <div className="bg-[#0B1120] p-5 rounded-2xl border border-white/10 hover:border-cyan-400/40 hover:scale-105 transition-all duration-300">
           <p className="text-gray-400">System Health</p>
           <h2 className={`text-3xl font-bold mt-2 ${
-            thermalAlert ? "text-red-400" : "text-green-400"
+            thermalCritical ? "text-red-400" : "text-green-400"
           }`}>
-            {thermalAlert ? "Critical" : "Stable"}
+            {simulationData?.response?.severity ?? "NORMAL"}
           </h2>
         </div>
 
@@ -136,7 +152,7 @@ export default function Home() {
               y1="100"
               x2="520"
               y2="180"
-              stroke={thermalAlert ? "#ef4444" : "#8b5cf6"}
+              stroke={thermalCritical ? "#ef4444" : "#8b5cf6"}
               strokeWidth="3"
               opacity="0.8"
             />
@@ -146,7 +162,7 @@ export default function Home() {
               y1="100"
               x2="320"
               y2="300"
-              stroke={powerSurge ? "#ef4444" : "#22c55e"}
+              stroke={powerCritical ? "#ef4444" : "#22c55e"}
               strokeWidth="3"
               opacity="0.8"
             />
@@ -154,14 +170,14 @@ export default function Home() {
             {/* MOVING PACKET 1 */}
             <circle r="8" fill="#22d3ee">
               <animateMotion
-                dur={highDemand ? "2s" : "4s"}
+                dur={(simulationData?.factory_state?.deadline_pressure?? 0) > 80 ? "2s" : "4s"}
                 repeatCount="indefinite"
                 path="M120,100 L320,100"
               />
             </circle>
 
             {/* MOVING PACKET 2 */}
-            <circle r="8" fill={thermalAlert ? "#ef4444" : "#a855f7"}>
+            <circle r="8" fill={thermalCritical ? "#ef4444" : "#a855f7"}>
               <animateMotion
                 dur="5s"
                 repeatCount="indefinite"
@@ -170,7 +186,7 @@ export default function Home() {
             </circle>
 
             {/* MOVING PACKET 3 */}
-            <circle r="8" fill={powerSurge ? "#ef4444" : "#22c55e"}>
+            <circle r="8" fill={powerCritical ? "#ef4444" : "#22c55e"}>
               <animateMotion
                 dur="3s"
                 repeatCount="indefinite"
@@ -199,7 +215,7 @@ export default function Home() {
             <div
               className={`w-20 h-20 rounded-full flex items-center justify-center text-sm animate-pulse shadow-lg
               ${
-                thermalAlert
+                thermalCritical
                   ? "border border-red-500 bg-red-500/20 shadow-red-500/30"
                   : "border border-orange-400 bg-orange-500/10 shadow-orange-500/20"
               }`}
@@ -213,7 +229,7 @@ export default function Home() {
             <div
               className={`w-20 h-20 rounded-full flex items-center justify-center text-sm animate-pulse shadow-lg
               ${
-                powerSurge
+                powerCritical
                   ? "border border-red-500 bg-red-500/20 shadow-red-500/30"
                   : "border border-green-400 bg-green-500/10 shadow-green-500/20"
               }`}
@@ -247,9 +263,7 @@ export default function Home() {
           {/* STABILIZE COOLING */}
           <button
             onClick={() => {
-              setThermalAlert(false);
-              setThroughput(84);
-              setPowerUsage(68);
+              runSimulation("stabilize_cooling")
             }}
             className="bg-green-500/20 border border-green-500/30 px-5 py-3 rounded-xl hover:bg-green-500/30 transition-all duration-300"
           >
@@ -269,9 +283,7 @@ export default function Home() {
           {/* REDUCE DEMAND */}
           <button
             onClick={() => {
-              setHighDemand(false);
-              setThroughput(72);
-              setPowerUsage(54);
+              runSimulation("reduce_demand")
             }}
             className="bg-blue-500/20 border border-blue-500/30 px-5 py-3 rounded-xl hover:bg-blue-500/30 transition-all duration-300"
           >
@@ -301,7 +313,9 @@ export default function Home() {
 
           {/* SYSTEM RESET */}
           <button
-            onClick={resetSystem}
+            onClick={() => {
+              runSimulation("factory_reset")
+            }}
             className="bg-white/10 border border-white/20 px-5 py-3 rounded-xl hover:bg-white/20 transition-all duration-300"
           >
             Reset System
@@ -318,9 +332,8 @@ export default function Home() {
         </h2>
 
         <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
-          {thermalAlert
-            ? "Thermal instability detected. AI rerouting production load."
-            : "All systems operating within nominal thresholds."}
+          {simulationData?.response?.decisions?.join(" | ")
+                   ?? "Awaiting simulation data"}
         </div>
 
       </div>
@@ -344,6 +357,9 @@ export default function Home() {
              
           <div className = "text-sm tracking-widest text-red-400">
             Severity: {simulationData?.response?.severity}
+            <div className="text-cyan-300">
+              Risk Score: {simulationData?.response?.risk_score}
+            </div>
           </div>
 
         </div>

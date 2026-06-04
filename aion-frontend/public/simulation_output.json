@@ -1,38 +1,50 @@
 {
     "factory_state": {
-        "throughput": 95,
+        "throughput": 84,
         "thermal_load": 72,
-        "power_usage": 82,
+        "power_usage": 68,
         "storage_health": 91,
         "cooling_efficiency": 88,
         "material_availability": 93,
-        "deadline_pressure": 57,
+        "deadline_pressure": 40,
         "maintenance_health": 87,
+        "machine_health": 90,
+        "inventory_level": 75,
+        "defect_rate": 5,
+        "line_utilization": 70,
+        "energy_cost": 50,
         "system_status": "stable"
     },
     "response": {
         "severity": "NORMAL",
+        "risk_score": 34.3,
         "decisions": [
-            "System operating within optimal thresholds."
+            "System operating within acceptable operational limits."
         ],
         "log": {
-            "timestamp": "11:00:42",
-            "event": "high_demand",
+            "timestamp": "10:58:27",
+            "event": "factory_reset",
             "state": {
-                "throughput": 95,
+                "throughput": 84,
                 "thermal_load": 72,
-                "power_usage": 82,
+                "power_usage": 68,
                 "storage_health": 91,
                 "cooling_efficiency": 88,
                 "material_availability": 93,
-                "deadline_pressure": 57,
+                "deadline_pressure": 40,
                 "maintenance_health": 87,
+                "machine_health": 90,
+                "inventory_level": 75,
+                "defect_rate": 5,
+                "line_utilization": 70,
+                "energy_cost": 50,
                 "system_status": "stable"
             },
             "evaluation": {
                 "severity": "NORMAL",
+                "risk_score": 34.3,
                 "decisions": [
-                    "System operating within optimal thresholds."
+                    "System operating within acceptable operational limits."
                 ]
             }
         }

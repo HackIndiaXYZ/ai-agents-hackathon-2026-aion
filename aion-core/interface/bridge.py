@@ -13,7 +13,10 @@ def get_operator_response(event="system check"):
     )
     
     return {
-        "severity": evaluation["severity"],
-        "decisions": evaluation["decisions"],
-        "log": log_entry
+    "severity": evaluation["severity"],
+    "operational_risk": evaluation["operational_risk"],
+    "infrastructure_risk": evaluation["infrastructure_risk"],
+    "overall_risk": evaluation["overall_risk"],
+    "decisions": evaluation["decisions"],
+    "log": log_entry
     }
