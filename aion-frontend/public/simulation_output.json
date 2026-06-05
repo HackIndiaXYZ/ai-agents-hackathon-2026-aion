@@ -1,15 +1,15 @@
 {
     "factory_state": {
-        "throughput": 84,
+        "throughput": 74,
         "thermal_load": 72,
         "power_usage": 68,
         "storage_health": 91,
         "cooling_efficiency": 88,
-        "material_availability": 93,
+        "material_availability": 83,
         "deadline_pressure": 40,
         "maintenance_health": 87,
         "machine_health": 90,
-        "inventory_level": 75,
+        "inventory_level": 60,
         "defect_rate": 5,
         "line_utilization": 70,
         "energy_cost": 50,
@@ -17,24 +17,26 @@
     },
     "response": {
         "severity": "NORMAL",
-        "risk_score": 34.3,
+        "operational_risk": 30.95,
+        "infrastructure_risk": 45.02,
+        "overall_risk": 45.02,
         "decisions": [
             "System operating within acceptable operational limits."
         ],
         "log": {
-            "timestamp": "10:58:27",
-            "event": "factory_reset",
+            "timestamp": "16:23:37",
+            "event": "material_shortage",
             "state": {
-                "throughput": 84,
+                "throughput": 74,
                 "thermal_load": 72,
                 "power_usage": 68,
                 "storage_health": 91,
                 "cooling_efficiency": 88,
-                "material_availability": 93,
+                "material_availability": 83,
                 "deadline_pressure": 40,
                 "maintenance_health": 87,
                 "machine_health": 90,
-                "inventory_level": 75,
+                "inventory_level": 60,
                 "defect_rate": 5,
                 "line_utilization": 70,
                 "energy_cost": 50,
@@ -42,7 +44,9 @@
             },
             "evaluation": {
                 "severity": "NORMAL",
-                "risk_score": 34.3,
+                "operational_risk": 30.95,
+                "infrastructure_risk": 45.02,
+                "overall_risk": 45.02,
                 "decisions": [
                     "System operating within acceptable operational limits."
                 ]

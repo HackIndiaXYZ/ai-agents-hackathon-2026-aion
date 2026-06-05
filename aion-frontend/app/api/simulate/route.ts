@@ -11,7 +11,9 @@ export async function POST(req: Request) {
 
     const event = body.event;
 
-    const command = `python ../aion-core/run_simulation.py ${event}`;
+    const magnitude = body.magnitude ?? 50;
+
+    const command = `python ../aion-core/run_simulation.py ${event} ${magnitude}`;
 
     await execAsync(command);
 

@@ -2,6 +2,8 @@
 
 import { useEffect,useState } from "react";
 
+import { productionLines } from "./data/factoryTopology";
+
 export default function Home() {
 
   const [simulationData, setSimulationData] = useState<any>(null);
@@ -12,6 +14,18 @@ export default function Home() {
 
   const powerCritical = (simulationData?.factory_state?.power_usage ?? 0) > 80;
   
+  const [powerMagnitude, setPowerMagnitude] =
+    useState(50);
+
+  const [coolingMagnitude, setCoolingMagnitude] =
+    useState(50);
+
+  const [materialMagnitude, setMaterialMagnitude] =
+    useState(50);
+
+  const [demandMagnitude, setDemandMagnitude] =
+    useState(50);
+
   useEffect(() => {
     fetch("/simulation_output.json")
     .then((res) => res.json())
@@ -20,8 +34,15 @@ export default function Home() {
     });
   }, []);
  
-  const runSimulation = async (event: string) => {
+  const runSimulation = async (event: string, magnitude: number = 50) => {
 
+  if (event === "factory_reset") {
+  setPowerMagnitude(50);
+  setCoolingMagnitude(50);
+  setMaterialMagnitude(50);
+  setDemandMagnitude(50);
+  }
+  
   console.log("RUN SIMULATION:", event);
 
   try {
@@ -32,7 +53,8 @@ export default function Home() {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        event
+        event,
+        magnitude
       })
     });
 
@@ -60,6 +82,31 @@ export default function Home() {
     <main className="min-h-screen bg-[#050816] text-white p-6">
 
       {/* HEADER */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+
+        <div className="bg-[#0B1120] p-5 rounded-2xl border border-cyan-500/20">
+          <p className="text-gray-400">Operational Risk</p>
+          <h2 className="text-3xl font-bold text-yellow-400">
+            {simulationData?.response?.operational_risk ?? "--"}
+          </h2>
+        </div>
+
+        <div className="bg-[#0B1120] p-5 rounded-2xl border border-red-500/20">
+          <p className="text-gray-400">Infrastructure Risk</p>
+          <h2 className="text-3xl font-bold text-red-400">
+            {simulationData?.response?.infrastructure_risk ?? "--"}
+          </h2>
+        </div>
+
+        <div className="bg-[#0B1120] p-5 rounded-2xl border border-green-500/20">
+          <p className="text-gray-400">Overall Risk</p>
+          <h2 className="text-3xl font-bold text-green-400">
+            {simulationData?.response?.overall_risk ?? "--"}
+          </h2>
+        </div>
+
+      </div>
+
       <div className="flex justify-between items-center mb-8">
 
         <div>
@@ -240,98 +287,310 @@ export default function Home() {
 
         </div>
       </div>
+      
+      {/* PRODUCTION LINES */}
+      <div className="bg-[#0B1120] rounded-2xl border border-white/10 p-6 mb-8">
+
+      <h2 className="text-2xl font-semibold mb-4">
+        Production Lines
+      </h2>
+
+      <div className="space-y-6">
+
+        {productionLines.map((line) => (
+
+          <div
+            key={line.id}
+            className="border border-cyan-500/20 rounded-xl p-4"
+          >
+
+            <h3 className="text-cyan-300 font-bold mb-3">
+              {line.name}
+            </h3>
+
+            <div className="flex flex-wrap gap-3">
+
+              {line.nodes.map((node) => (
+
+                <div
+                  key={node}
+                  className="
+                    px-4
+                    py-3
+                    rounded-xl
+                    border
+                    border-cyan-500/30
+                    bg-cyan-500/10
+                  "
+                >
+                  {node}
+                </div>
+
+              ))}
+
+            </div>
+
+          </div>
+
+        ))}
+
+       </div>
+
+      </div>
+
+      <div className="bg-[#0B1120] rounded-2xl border border-white/10 p-6 mb-8">
+
+        <h2 className="text-2xl font-semibold mb-4">
+          Operating Limits
+        </h2>
+
+        <div className="grid md:grid-cols-3 gap-4">
+
+          <div>
+            <p className="text-gray-400">
+              Thermal Limit
+            </p>
+
+            <p className="text-xl font-bold">
+              80%
+            </p>
+          </div>
+
+          <div>
+            <p className="text-gray-400">
+              Power Limit
+            </p>
+
+            <p className="text-xl font-bold">
+              80%
+            </p>
+          </div>
+
+          <div>
+            <p className="text-gray-400">
+              Storage Health
+            </p>
+
+            <p className="text-xl font-bold">
+              `{'>'}`40%
+            </p>
+          </div>
+
+        </div>
+
+      </div>
 
       {/* CONTROL PANEL */}
+
       <div className="bg-[#0B1120] rounded-2xl border border-white/10 p-6 mb-8">
 
         <h2 className="text-2xl font-semibold mb-6">
           Disturbance Injection
         </h2>
 
-        <div className="flex gap-4 flex-wrap">
-
-          {/* COOLING FAILURE */}
-          <button
-            onClick={() => {
-              runSimulation("cooling_failure");
-            }}
-            className="bg-red-500/20 border border-red-500/30 px-5 py-3 rounded-xl hover:bg-red-500/30 transition-all duration-300"
-          >
-            Inject Cooling Failure
-          </button>
-          
-          {/* STABILIZE COOLING */}
-          <button
-            onClick={() => {
-              runSimulation("stabilize_cooling")
-            }}
-            className="bg-green-500/20 border border-green-500/30 px-5 py-3 rounded-xl hover:bg-green-500/30 transition-all duration-300"
-          >
-            Stabilize Cooling
-          </button>
-
-          {/* HIGH DEMAND */}
-          <button
-            onClick={() => {
-              runSimulation("high_demand")
-            }}
-            className="bg-yellow-500/20 border border-yellow-500/30 px-5 py-3 rounded-xl hover:bg-yellow-500/30 transition-all duration-300"
-          >
-            Increase Production Demand
-          </button>
-          
-          {/* REDUCE DEMAND */}
-          <button
-            onClick={() => {
-              runSimulation("reduce_demand")
-            }}
-            className="bg-blue-500/20 border border-blue-500/30 px-5 py-3 rounded-xl hover:bg-blue-500/30 transition-all duration-300"
-          >
-            Reduce Production Demand
-          </button>
+        <div className="grid md:grid-cols-2 gap-8">
 
           {/* POWER SURGE */}
-          <button
-            onClick={() => {
-              runSimulation("power_surge")
-            }}
-            className="bg-cyan-500/20 border border-cyan-500/30 px-5 py-3 rounded-xl hover:bg-cyan-500/30 transition-all duration-300"
-          >
-            Trigger Power Surge
-          </button>
-          
-          {/*MATERIAL SHORTAGE*/}
-          <button
-            onClick={() =>{
-              runSimulation("material_shortage")
-            }}
-            className="bg-violet-500/20 border border-violet-500/30 px-5 py-3 rounded-xl hover:bg-violet-500/30 transition-all duration-300"
+
+          <div>
+
+            <p className="text-cyan-300 mb-2">
+              Power Surge
+            </p>
+
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={powerMagnitude}
+              onChange={(e)=>
+                setPowerMagnitude(
+                  Number(e.target.value)
+                )
+              }
+              className="w-full"
+            />
+
+            <p className="text-sm text-gray-400 mb-3">
+              Magnitude: {powerMagnitude}
+            </p>
+
+            <button
+              onClick={() =>
+                runSimulation(
+                  "power_surge",
+                  powerMagnitude
+                )
+              }
+              className="bg-cyan-500/20 border border-cyan-500/30 px-5 py-3 rounded-xl"
             >
-             Trigger Material Shortage
-            </button> 
+              Trigger Power Surge
+            </button>
 
+          </div>
 
-          {/* SYSTEM RESET */}
+          {/* COOLING FAILURE */}
+
+          <div>
+
+            <p className="text-red-300 mb-2">
+              Cooling Failure
+            </p>
+
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={coolingMagnitude}
+              onChange={(e)=>
+                setCoolingMagnitude(
+                  Number(e.target.value)
+                )
+              }
+              className="w-full"
+            />
+
+            <p className="text-sm text-gray-400 mb-3">
+              Magnitude: {coolingMagnitude}
+            </p>
+
+            <button
+              onClick={() =>
+                runSimulation(
+                  "cooling_failure",
+                  coolingMagnitude
+                )
+              }
+              className="bg-red-500/20 border border-red-500/30 px-5 py-3 rounded-xl"
+            >
+              Inject Cooling Failure
+            </button>
+
+          </div>
+
+          {/* MATERIAL SHORTAGE */}
+
+          <div>
+
+            <p className="text-violet-300 mb-2">
+              Material Shortage
+            </p>
+
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={materialMagnitude}
+              onChange={(e)=>
+                setMaterialMagnitude(
+                  Number(e.target.value)
+                )
+              }
+              className="w-full"
+            />
+
+            <p className="text-sm text-gray-400 mb-3">
+              Magnitude: {materialMagnitude}
+            </p>
+
+            <button
+              onClick={() =>
+                runSimulation(
+                  "material_shortage",
+                  materialMagnitude
+                )
+              }
+              className="bg-violet-500/20 border border-violet-500/30 px-5 py-3 rounded-xl"
+            >
+              Trigger Material Shortage
+            </button>
+
+          </div>
+
+          {/* DEMAND */}
+
+          <div>
+
+            <p className="text-yellow-300 mb-2">
+              Production Demand
+            </p>
+
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={demandMagnitude}
+              onChange={(e)=>
+                setDemandMagnitude(
+                  Number(e.target.value)
+                )
+              }
+              className="w-full"
+            />
+
+            <p className="text-sm text-gray-400 mb-3">
+              Magnitude: {demandMagnitude}
+            </p>
+
+            <div className="flex gap-2">
+
+              <button
+                onClick={() =>
+                  runSimulation(
+                    "high_demand",
+                    demandMagnitude
+                  )
+                }
+                className="bg-yellow-500/20 border border-yellow-500/30 px-5 py-3 rounded-xl"
+              >
+                Increase Demand
+              </button>
+
+              <button
+                onClick={() =>
+                  runSimulation(
+                    "reduce_demand",
+                    demandMagnitude
+                  )
+                }
+                className="bg-blue-500/20 border border-blue-500/30 px-5 py-3 rounded-xl"
+              >
+                Reduce Demand
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div className="mt-8">
+
           <button
-            onClick={() => {
-              runSimulation("factory_reset")
-            }}
-            className="bg-white/10 border border-white/20 px-5 py-3 rounded-xl hover:bg-white/20 transition-all duration-300"
+            onClick={() =>
+              runSimulation(
+                "factory_reset",
+                50
+              )
+            }
+            className="bg-white/10 border border-white/20 px-5 py-3 rounded-xl"
           >
             Reset System
           </button>
 
         </div>
+
       </div>
+     
 
       {/* ALERTS */}
       <div className="bg-[#0B1120] rounded-2xl border border-red-500/20 p-6">
 
         <h2 className="text-2xl font-semibold mb-4 text-red-400">
-          Active Alerts
+          AION Recommendations
         </h2>
 
-        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
+        <div className="bg-cyan-500/10 border border-cyan-500/20 rounded-xl p-4">
           {simulationData?.response?.decisions?.join(" | ")
                    ?? "Awaiting simulation data"}
         </div>
@@ -358,7 +617,15 @@ export default function Home() {
           <div className = "text-sm tracking-widest text-red-400">
             Severity: {simulationData?.response?.severity}
             <div className="text-cyan-300">
-              Risk Score: {simulationData?.response?.risk_score}
+              Operational Risk: {simulationData?.response?.operational_risk}
+            </div>
+
+            <div className="text-yellow-300">
+              Infrastructure Risk: {simulationData?.response?.infrastructure_risk}
+            </div>
+
+            <div className="text-green-300">
+              Overall Risk: {simulationData?.response?.overall_risk}
             </div>
           </div>
 

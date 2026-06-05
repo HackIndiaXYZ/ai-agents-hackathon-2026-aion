@@ -4,9 +4,9 @@ from interface.bridge import get_operator_response
 from simulation.factory_state import factory_state
 from simulation.disturbances import apply_disturbance
 
-def export_simulation(event):
+def export_simulation(event, magnitude):
 
-    apply_disturbance(event)
+    apply_disturbance(event, magnitude)
 
     response = get_operator_response(event)
 
