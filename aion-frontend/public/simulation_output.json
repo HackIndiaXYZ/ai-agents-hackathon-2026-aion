@@ -1,56 +1,62 @@
 {
     "factory_state": {
-        "throughput": 74,
-        "thermal_load": 72,
-        "power_usage": 68,
+        "throughput": 84,
+        "thermal_load": 84,
+        "power_usage": 86,
         "storage_health": 91,
         "cooling_efficiency": 88,
-        "material_availability": 83,
+        "material_availability": 93,
         "deadline_pressure": 40,
         "maintenance_health": 87,
-        "machine_health": 90,
-        "inventory_level": 60,
-        "defect_rate": 5,
+        "machine_health": 82,
+        "inventory_level": 75,
+        "defect_rate": 10,
         "line_utilization": 70,
-        "energy_cost": 50,
+        "energy_cost": 63,
         "system_status": "stable"
     },
     "response": {
-        "severity": "NORMAL",
-        "operational_risk": 30.95,
-        "infrastructure_risk": 45.02,
-        "overall_risk": 45.02,
+        "severity": "CRITICAL",
+        "operational_risk": 31.72,
+        "infrastructure_risk": 54.77,
+        "overall_risk": 54.77,
         "decisions": [
-            "System operating within acceptable operational limits."
+            "Reduce throughput and cooling load.",
+            "Activate auxiliary power stabilization."
         ],
         "log": {
-            "timestamp": "16:23:37",
-            "event": "material_shortage",
+            "timestamp": "23:12:41",
+            "event": "power_surge",
             "state": {
-                "throughput": 74,
-                "thermal_load": 72,
-                "power_usage": 68,
+                "throughput": 84,
+                "thermal_load": 84,
+                "power_usage": 86,
                 "storage_health": 91,
                 "cooling_efficiency": 88,
-                "material_availability": 83,
+                "material_availability": 93,
                 "deadline_pressure": 40,
                 "maintenance_health": 87,
-                "machine_health": 90,
-                "inventory_level": 60,
-                "defect_rate": 5,
+                "machine_health": 82,
+                "inventory_level": 75,
+                "defect_rate": 10,
                 "line_utilization": 70,
-                "energy_cost": 50,
+                "energy_cost": 63,
                 "system_status": "stable"
             },
             "evaluation": {
-                "severity": "NORMAL",
-                "operational_risk": 30.95,
-                "infrastructure_risk": 45.02,
-                "overall_risk": 45.02,
+                "severity": "CRITICAL",
+                "operational_risk": 31.72,
+                "infrastructure_risk": 54.77,
+                "overall_risk": 54.77,
                 "decisions": [
-                    "System operating within acceptable operational limits."
+                    "Reduce throughput and cooling load.",
+                    "Activate auxiliary power stabilization."
                 ]
             }
         }
+    },
+    "ai_prediction": {
+        "severity": "CRITICAL",
+        "confidence": 99.53
     }
 }

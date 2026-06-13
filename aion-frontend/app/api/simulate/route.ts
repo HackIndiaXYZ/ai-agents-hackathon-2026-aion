@@ -13,9 +13,17 @@ export async function POST(req: Request) {
 
     const magnitude = body.magnitude ?? 50;
 
-    const command = `python ../aion-core/run_simulation.py ${event} ${magnitude}`;
+    const command = `"..\\.venv\\Scripts\\python.exe" ..\\aion-core\\run_simulation.py ${event} ${magnitude}`;
+    //const command = `python ../aion-core/run_simulation.py ${event} ${magnitude}`;
 
-    await execAsync(command);
+    //await execAsync(command);
+    const result = await execAsync(command);
+    
+    console.log("STDOUT:");
+    console.log(result.stdout);
+
+    console.log("STDERR:");
+    console.log(result.stderr);
 
     return Response.json({
       success: true

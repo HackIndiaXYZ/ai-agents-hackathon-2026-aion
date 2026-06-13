@@ -3,16 +3,19 @@ import json, os
 from interface.bridge import get_operator_response
 from simulation.factory_state import factory_state
 from simulation.disturbances import apply_disturbance
+from ai.predictor import predict_state
 
 def export_simulation(event, magnitude):
 
     apply_disturbance(event, magnitude)
 
     response = get_operator_response(event)
+    ai_prediction = predict_state(factory_state)
 
     export_data = {
         "factory_state": factory_state,
-        "response": response
+        "response": response,
+        "ai_prediction": ai_prediction
     }
     
     current_dir = os.path.dirname(__file__)

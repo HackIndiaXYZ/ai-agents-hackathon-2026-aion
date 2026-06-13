@@ -10,9 +10,29 @@ export default function Home() {
    
   const severity = simulationData?.response?.severity ?? "NORMAL";
 
+  const aiSeverity = simulationData?.ai_prediction?.severity ?? "--";
+
+  const aiConfidence = simulationData?.ai_prediction?.confidence ?? "--";
+
+  const aiAgreement = aiSeverity === severity ? "MATCH" : "MISMATCH";
+
   const thermalCritical = (simulationData?.factory_state?.thermal_load ?? 0) > 80;
 
   const powerCritical = (simulationData?.factory_state?.power_usage ?? 0) > 80;
+  
+  const networkColor =
+    severity === "CRITICAL"
+    ? "border-red-500 bg-red-500/20"
+    : severity === "WARNING"
+    ? "border-yellow-500 bg-yellow-500/20"
+    : "border-cyan-500 bg-cyan-500/10";
+  
+  const lineColor =
+   severity === "CRITICAL"
+   ? "bg-red-500"
+   : severity === "WARNING"
+   ? "bg-yellow-500"
+   : "bg-cyan-500";  
   
   const [powerMagnitude, setPowerMagnitude] =
     useState(50);
@@ -82,7 +102,7 @@ export default function Home() {
     <main className="min-h-screen bg-[#050816] text-white p-6">
 
       {/* HEADER */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
 
         <div className="bg-[#0B1120] p-5 rounded-2xl border border-cyan-500/20">
           <p className="text-gray-400">Operational Risk</p>
@@ -99,10 +119,35 @@ export default function Home() {
         </div>
 
         <div className="bg-[#0B1120] p-5 rounded-2xl border border-green-500/20">
-          <p className="text-gray-400">Overall Risk</p>
+          <p className="text-gray-400">
+            Overall Risk
+          </p>
           <h2 className="text-3xl font-bold text-green-400">
             {simulationData?.response?.overall_risk ?? "--"}
           </h2>
+        </div>
+
+        <div className="bg-[#0B1120] p-5 rounded-2x1 border border-cyan-500/20">
+         
+         <p className="text-gray-400">
+          AI Prediction
+         </p>
+        
+          <h2 className="text-2x1 font-bold text-cyan-400">
+            {aiSeverity}
+          </h2>
+
+          <p className="text-sm text-gray-400 mt-2">
+            Confidence: {aiConfidence}%
+          </p>
+
+          <p 
+           className={`text-sm mt-1 ${
+            aiAgreement === "MATCH"? "text-green-400": "text-red-400"
+           }`}>
+            {aiAgreement}
+           </p>
+
         </div>
 
       </div>
@@ -166,164 +211,175 @@ export default function Home() {
         </div>
 
       </div>
+      
+      {/* This is where factory topology was */}
+      {/* FACTORY DIGITAL TWIN */}
 
-      {/* FACTORY TOPOLOGY */}
       <div className="bg-[#0B1120] rounded-2xl border border-white/10 p-6 mb-8">
 
         <h2 className="text-2xl font-semibold mb-2">
-          Factory Topology
+          Factory Digital Twin
         </h2>
 
         <p className="text-gray-400 mb-6">
-          Autonomous material routing and thermal balancing network.
+          Real-time industrial operations topology.
         </p>
 
-        <div className="relative w-full h-[400px] rounded-xl overflow-hidden border border-cyan-500/10 bg-black">
+        <div className="relative h-[850px] rounded-xl border border-cyan-500/20 bg-black overflow-hidden">
 
-          {/* SVG NETWORK */}
+          {/* NETWORK CONNECTIONS */}
+
           <svg className="absolute inset-0 w-full h-full">
 
-            {/* CONNECTION PATHS */}
+            {/* Utilities -> Hub */}
+
             <line
-              x1="120"
-              y1="100"
-              x2="320"
-              y2="100"
-              stroke="#06b6d4"
-              strokeWidth="3"
+              x1="220"
+              y1="90"
+              x2="500"
+              y2="220"
+              stroke="cyan"
+              strokeWidth="2"
               opacity="0.6"
             />
 
             <line
-              x1="320"
-              y1="100"
-              x2="520"
-              y2="180"
-              stroke={thermalCritical ? "#ef4444" : "#8b5cf6"}
-              strokeWidth="3"
-              opacity="0.8"
+              x1="500"
+              y1="90"
+              x2="500"
+              y2="220"
+              stroke="cyan"
+              strokeWidth="2"
+              opacity="0.6"
             />
 
             <line
-              x1="320"
-              y1="100"
-              x2="320"
-              y2="300"
-              stroke={powerCritical ? "#ef4444" : "#22c55e"}
-              strokeWidth="3"
-              opacity="0.8"
+              x1="780"
+              y1="90"
+              x2="500"
+              y2="220"
+              stroke="cyan"
+              strokeWidth="2"
+              opacity="0.6"
             />
 
-            {/* MOVING PACKET 1 */}
-            <circle r="8" fill="#22d3ee">
-              <animateMotion
-                dur={(simulationData?.factory_state?.deadline_pressure?? 0) > 80 ? "2s" : "4s"}
-                repeatCount="indefinite"
-                path="M120,100 L320,100"
-              />
-            </circle>
+            {/* Hub -> Production */}
 
-            {/* MOVING PACKET 2 */}
-            <circle r="8" fill={thermalCritical ? "#ef4444" : "#a855f7"}>
-              <animateMotion
-                dur="5s"
-                repeatCount="indefinite"
-                path="M320,100 L520,180"
-              />
-            </circle>
+            <line x1="500" y1="260" x2="200" y2="430" stroke="cyan" strokeWidth="2"/>
+            <line x1="500" y1="260" x2="350" y2="430" stroke="cyan" strokeWidth="2"/>
+            <line x1="500" y1="260" x2="500" y2="430" stroke="cyan" strokeWidth="2"/>
+            <line x1="500" y1="260" x2="650" y2="430" stroke="cyan" strokeWidth="2"/>
+            <line x1="500" y1="260" x2="800" y2="430" stroke="cyan" strokeWidth="2"/>
 
-            {/* MOVING PACKET 3 */}
-            <circle r="8" fill={powerCritical ? "#ef4444" : "#22c55e"}>
+            {/* Animated Packet */}
+
+            <circle r="6" fill="white">
+
               <animateMotion
                 dur="3s"
                 repeatCount="indefinite"
-                path="M320,100 L320,300"
+                path="M500,220 L500,430"
               />
+
             </circle>
 
           </svg>
 
-          {/* MIXING NODE */}
-          <div className="absolute left-[80px] top-[70px]">
-            <div className="w-20 h-20 rounded-full border border-cyan-400 bg-cyan-500/10 flex items-center justify-center text-sm animate-pulse shadow-lg shadow-cyan-500/20">
-              Mixing
+          {/* UTILITIES */}
+
+          <div className="absolute left-[120px] top-[20px]">
+
+            <div className={`w-48 h-20 rounded-xl border flex items-center justify-center font-semibold ${networkColor}`}>
+              POWER GRID
             </div>
+
           </div>
 
-          {/* ASSEMBLY NODE */}
-          <div className="absolute left-[280px] top-[70px]">
-            <div className="w-20 h-20 rounded-full border border-purple-400 bg-purple-500/10 flex items-center justify-center text-sm animate-pulse shadow-lg shadow-purple-500/20">
-              Assembly
+          <div className="absolute left-[420px] top-[20px]">
+
+            <div className={`w-48 h-20 rounded-xl border flex items-center justify-center font-semibold ${networkColor}`}>
+              COOLING PLANT
             </div>
+
           </div>
 
-          {/* THERMAL NODE */}
-          <div className="absolute left-[480px] top-[150px]">
+          <div className="absolute left-[720px] top-[20px]">
+
+            <div className={`w-48 h-20 rounded-xl border flex items-center justify-center font-semibold ${networkColor}`}>
+              WAREHOUSE
+            </div>
+
+          </div>
+
+          {/* CENTRAL HUB */}
+
+          <div className="absolute left-[400px] top-[120px]">
+
             <div
-              className={`w-20 h-20 rounded-full flex items-center justify-center text-sm animate-pulse shadow-lg
-              ${
-                thermalCritical
-                  ? "border border-red-500 bg-red-500/20 shadow-red-500/30"
-                  : "border border-orange-400 bg-orange-500/10 shadow-orange-500/20"
-              }`}
+              className={`
+                w-52
+                h-24
+                rounded-xl
+                border
+                flex
+                items-center
+                justify-center
+                font-bold
+                text-lg
+                shadow-xl
+                ${networkColor}
+              `}
             >
-              Thermal
+              AION ORCHESTRATION HUB
             </div>
+
           </div>
 
-          {/* STORAGE NODE */}
-          <div className="absolute left-[280px] top-[260px]">
-            <div
-              className={`w-20 h-20 rounded-full flex items-center justify-center text-sm animate-pulse shadow-lg
-              ${
-                powerCritical
-                  ? "border border-red-500 bg-red-500/20 shadow-red-500/30"
-                  : "border border-green-400 bg-green-500/10 shadow-green-500/20"
-              }`}
-            >
-              Storage
+          {/* LINE A */}
+
+          <div className="absolute left-[40px] top-[380px]">
+
+            <div className="text-cyan-300 mb-2 font-semibold">
+              Line A
             </div>
-          </div>
 
-        </div>
-      </div>
-      
-      {/* PRODUCTION LINES */}
-      <div className="bg-[#0B1120] rounded-2xl border border-white/10 p-6 mb-8">
+            <div className="flex items-center gap-6">
 
-      <h2 className="text-2xl font-semibold mb-4">
-        Production Lines
-      </h2>
-
-      <div className="space-y-6">
-
-        {productionLines.map((line) => (
-
-          <div
-            key={line.id}
-            className="border border-cyan-500/20 rounded-xl p-4"
-          >
-
-            <h3 className="text-cyan-300 font-bold mb-3">
-              {line.name}
-            </h3>
-
-            <div className="flex flex-wrap gap-3">
-
-              {line.nodes.map((node) => (
+              {productionLines[0].nodes.map((node,index)=>(
 
                 <div
                   key={node}
-                  className="
-                    px-4
-                    py-3
-                    rounded-xl
-                    border
-                    border-cyan-500/30
-                    bg-cyan-500/10
-                  "
+                  className="flex items-center"
                 >
-                  {node}
+
+                  <div
+                    className={`
+                      w-32
+                      h-16
+                      rounded-lg
+                      border
+                      flex
+                      items-center
+                      justify-center
+                      text-xs
+                      ${networkColor}
+                    `}
+                  >
+                    {node}
+                  </div>
+
+                  {index < productionLines[0].nodes.length - 1 && (
+
+                    <div className="relative">
+
+                      <div className={`w-8 h-[2px] ${lineColor}`} />
+
+                      <div className="absolute left-0 top-[-3px] w-2 h-2 rounded-full bg-white animate-pulse" />
+
+                    </div>
+
+                  )}
+
                 </div>
 
               ))}
@@ -332,11 +388,258 @@ export default function Home() {
 
           </div>
 
-        ))}
+          {/* LINE B */}
 
-       </div>
+          <div className="absolute left-[40px] top-[450px]">
+
+            <div className="text-cyan-300 mb-2 font-semibold">
+              Line B
+            </div>
+
+            <div className="flex items-center gap-6">
+
+              {productionLines[1].nodes.map((node,index)=>(
+
+                <div
+                  key={node}
+                  className="flex items-center"
+                >
+
+                  <div
+                    className={`
+                      w-32
+                      h-16
+                      rounded-lg
+                      border
+                      flex
+                      items-center
+                      justify-center
+                      text-xs
+                      ${networkColor}
+                    `}
+                  >
+                    {node}
+                  </div>
+
+                  {index < productionLines[1].nodes.length - 1 && (
+
+                    <div className="relative">
+
+                      <div className={`w-8 h-[2px] ${lineColor}`} />
+
+                      <div className="absolute left-0 top-[-3px] w-2 h-2 rounded-full bg-white animate-pulse" />
+
+                    </div>
+
+                  )}
+
+                </div>
+
+              ))}
+
+            </div>
+
+          </div>
+
+          {/* LINE C */}
+
+          <div className="absolute left-[40px] top-[520px]">
+
+            <div className="text-cyan-300 mb-2 font-semibold">
+              Line C
+            </div>
+
+            <div className="flex items-center gap-6">
+
+              {productionLines[2].nodes.map((node,index)=>(
+
+                <div
+                  key={node}
+                  className="flex items-center"
+                >
+
+                  <div
+                    className={`
+                      w-32
+                      h-16
+                      rounded-lg
+                      border
+                      flex
+                      items-center
+                      justify-center
+                      text-xs
+                      ${networkColor}
+                    `}
+                  >
+                    {node}
+                  </div>
+
+                  {index < productionLines[2].nodes.length - 1 && (
+
+                    <div className="relative">
+
+                      <div className={`w-8 h-[2px] ${lineColor}`} />
+
+                      <div className="absolute left-0 top-[-3px] w-2 h-2 rounded-full bg-white animate-pulse" />
+
+                    </div>
+
+                  )}
+
+                </div>
+
+              ))}
+
+            </div>
+
+          </div>
+
+          {/* LINE D */}
+
+          <div className="absolute left-[40px] top-[590px]">
+
+            <div className="text-cyan-300 mb-2 font-semibold">
+              Line D
+            </div>
+
+            <div className="flex items-center gap-6">
+
+              {productionLines[3].nodes.map((node,index)=>(
+
+                <div
+                  key={node}
+                  className="flex items-center"
+                >
+
+                  <div
+                    className={`
+                      w-32
+                      h-16
+                      rounded-lg
+                      border
+                      flex
+                      items-center
+                      justify-center
+                      text-xs
+                      ${networkColor}
+                    `}
+                  >
+                    {node}
+                  </div>
+
+                  {index < productionLines[3].nodes.length - 1 && (
+
+                    <div className="relative">
+
+                      <div className={`w-8 h-[2px] ${lineColor}`} />
+
+                      <div className="absolute left-0 top-[-3px] w-2 h-2 rounded-full bg-white animate-pulse" />
+
+                    </div>
+
+                  )}
+
+                </div>
+
+              ))}
+
+            </div>
+
+          </div>
+
+          {/* LINE E */}
+
+          <div className="absolute left-[40px] top-[660px]">
+
+            <div className="text-cyan-300 mb-2 font-semibold">
+              Line E
+            </div>
+
+            <div className="flex items-center gap-6">
+
+              {productionLines[4].nodes.map((node,index)=>(
+
+                <div
+                  key={node}
+                  className="flex items-center"
+                >
+
+                  <div
+                    className={`
+                      w-32
+                      h-16
+                      rounded-lg
+                      border
+                      flex
+                      items-center
+                      justify-center
+                      text-xs
+                      ${networkColor}
+                    `}
+                  >
+                    {node}
+                  </div>
+
+                  {index < productionLines[4].nodes.length - 1 && (
+
+                    <div className="relative">
+
+                      <div className={`w-8 h-[2px] ${lineColor}`} />
+
+                      <div className="absolute left-0 top-[-3px] w-2 h-2 rounded-full bg-white animate-pulse" />
+
+                    </div>
+
+                  )}
+
+                </div>
+
+              ))}
+
+            </div>
+
+          </div>
+
+          {/* STATUS STRIP */}
+
+          <div className="absolute bottom-4 left-4 right-4">
+
+            <div className="grid grid-cols-4 gap-4">
+
+              <div className={`rounded-lg p-3 ${networkColor}`}>
+                Throughput:
+                {" "}
+                {simulationData?.factory_state?.throughput}
+              </div>
+
+              <div className={`rounded-lg p-3 ${networkColor}`}>
+                Thermal:
+                {" "}
+                {simulationData?.factory_state?.thermal_load}
+              </div>
+
+              <div className={`rounded-lg p-3 ${networkColor}`}>
+                Power:
+                {" "}
+                {simulationData?.factory_state?.power_usage}
+              </div>
+
+              <div className={`rounded-lg p-3 ${networkColor}`}>
+                Status:
+                {" "}
+                {severity}
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
 
       </div>
+      
+      {/* This is where production lines was */}
+      
 
       <div className="bg-[#0B1120] rounded-2xl border border-white/10 p-6 mb-8">
 
