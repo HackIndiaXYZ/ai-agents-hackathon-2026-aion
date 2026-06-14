@@ -91,3 +91,9 @@ As these systems become more complex, maintaining efficiency, resilience, and re
 Technologies that can understand industrial behavior, anticipate disruptions, and support operational decision-making have the potential to reduce waste, improve resource utilization, strengthen supply chains, and increase infrastructure reliability.
 
 In the long term, platforms like AION point toward a future where industrial systems become progressively more intelligent, capable of assisting human operators, adapting to changing conditions, and ultimately enabling safer, more efficient, and more sustainable industrial ecosystems at global scale.
+
+## Demo Video 
+
+The demo video is included in this repository as:
+
+AION_demo.mp4
